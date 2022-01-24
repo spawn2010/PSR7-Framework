@@ -6,7 +6,8 @@ services:
     ports:
       - 8008:80
     volumes:
-      - ./:/var/www/html
+      - ./public:/var/www/html
+      - ./:/var/www
 
   db:
     image: mysql:latest
