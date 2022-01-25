@@ -1,14 +1,19 @@
 <?php
 
-use Framework\Http\Request;
+use Framework\Http\RequestFactory;
+use Framework\Http\Response;
 
 chdir(dirname(__DIR__));
-require __DIR__.'/../src/Framework/Http/Request.php';
+require 'vendor/autoload.php';
 
-$request = new Request();
+$request = RequestFactory::fromGlobals();
 
-$name = $_GET['name'] ?? 'Guest';
+$name = $request->getQueryParams()['name'] ?? 'Guest';
 
+$response =  (new Response ('Hello, '. $name . '!'))->withHeader('X-Developer', 'ElisDN');
 
-header('X-developer: ElisDN');
-echo 'hello '.$name;
+header('HTTP/1.0 '. $response->getStatusCode() . ' ' . $response->getReasonPhrase());
+foreach ($response->getHeaders() as $name => $value){
+    header ($name . ':' . $value);
+}
+echo $response->getBody();
