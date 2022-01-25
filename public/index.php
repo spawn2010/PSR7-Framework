@@ -7,7 +7,6 @@ require __DIR__.'/../src/Framework/Http/Request.php';
 
 $request = new Request();
 
-
 $name = $_GET['name'] ?? 'Guest';
 
 
