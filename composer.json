@@ -6,7 +6,8 @@
         "php": ">=7.4",
         "roave/security-advisories": "dev-master",
         "zendframework/zend-diactoros": "dev-master",
-        "psr/http-message": "dev-master"
+        "psr/http-message": "dev-master",
+        "laminas/laminas-httphandlerrunner": ">=1"
   }
   ,
   "require-dev": {
