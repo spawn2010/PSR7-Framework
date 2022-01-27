@@ -62,7 +62,6 @@ if ($action) {
     $response = new HtmlResponse('Undefined page', 404);
 }
 
-
 #Postprocessing
 
 $response->withHeader('X-Developer', 'ElisDN');
