@@ -1,74 +1,48 @@
 <?php
 
-use Psr\Http\Message\ServerRequestInterface;
-use Zend\Diactoros\ServerRequestFactory;
+use App\Http\Action;
+use Framework\Http\Router\Exception\RequestNotMatchedException;
+use Framework\Http\Router\RouteCollection;
+use Framework\Http\Router\Router;
 use Zend\Diactoros\Response\HtmlResponse;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
-use Zend\Diactoros\Response\JsonResponse;
+use Zend\Diactoros\ServerRequestFactory;
 
 chdir(dirname(__DIR__));
 require 'vendor/autoload.php';
 
-#init
+### Initialization
+
+$routes = new RouteCollection();
+
+$routes->get('home', '/', Action\HelloAction::class);
+$routes->get('about', '/about', Action\AboutAction::class);
+$routes->get('blog', '/blog', Action\Blog\IndexAction::class);
+$routes->get('blog_show', '/blog/{id}', Action\Blog\ShowAction::class, ['id' => '\d+']);
+
+$router = new Router($routes);
+
+### Running
 
 $request = ServerRequestFactory::fromGlobals();
-
-#Action
-
-### Action
-
-$path = $request->getUri()->getPath();
-$action = null;
-
-if ($path === '/') {
-
-    $action = function (ServerRequestInterface $request) {
-        $name = $request->getQueryParams()['name'] ?? 'Guest';
-        return new HtmlResponse('Hello, ' . $name . '!');
-    };
-
-} elseif ($path === '/about') {
-
-    $action = function () {
-        return new HtmlResponse('I am a simple site');
-    };
-
-} elseif ($path === '/blog') {
-
-    $action = function () {
-        return new JsonResponse([
-            ['id' => 2, 'title' => 'The Second Post'],
-            ['id' => 1, 'title' => 'The First Post'],
-        ]);
-    };
-
-} elseif (preg_match('#^/blog/(?P<id>\d+)$#i', $path, $matches)) {
-
-    $request = $request->withAttribute('id', $matches['id']);
-
-    $action = function (ServerRequestInterface $request) {
-        $id = $request->getAttribute('id');
-        if ($id > 2) {
-            return new JsonResponse(['error' => 'Undefined page'], 404);
-        }
-        return new JsonResponse(['id' => $id, 'title' => 'Post #' . $id]);
-    };
-
-}
-
-if ($action) {
+try {
+    $result = $router->match($request);
+    foreach ($result->getAttributes() as $attribute => $value) {
+        $request = $request->withAttribute($attribute, $value);
+    }
+    $handler = $result->getHandler();
+    /** @var callable $action */
+    $action = is_string($handler) ? new $handler() : $handler;
     $response = $action($request);
-} else {
+} catch (RequestNotMatchedException $e){
     $response = new HtmlResponse('Undefined page', 404);
 }
 
-#Postprocessing
+### Postprocessing
 
-$response->withHeader('X-Developer', 'ElisDN');
+$response = $response->withHeader('X-Developer', 'ElisDN');
 
-#Sending
+### Sending
 
 $emitter = new SapiEmitter();
 $emitter->emit($response);
-
-
