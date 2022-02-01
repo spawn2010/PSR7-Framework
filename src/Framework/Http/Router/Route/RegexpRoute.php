@@ -35,7 +35,7 @@ class RegexpRoute implements Route
         }, $this->pattern);
 
         $path = $request->getUri()->getPath();
-
+        
         if (!preg_match('~^' . $pattern . '$~i', $path, $matches)) {
             return null;
         }

@@ -3,12 +3,13 @@
 namespace Framework\Http\Router;
 
 use Framework\Http\Router\Route\RegexpRoute;
+use Framework\Http\Router\Route\Route;
 
 class RouteCollection
 {
     private $routes = [];
 
-    public function addRoute(RegexpRoute $route): void
+    public function addRoute(Route $route): void
     {
         $this->routes[] = $route;
     }
