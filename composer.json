@@ -8,7 +8,8 @@
         "zendframework/zend-diactoros": "dev-master",
         "psr/http-message": "dev-master",
         "laminas/laminas-httphandlerrunner": ">=1",
-        "aura/router": "3.*"
+        "aura/router": "3.*",
+      "ext-json": "*"
     }
 ,
     "require-dev": {
