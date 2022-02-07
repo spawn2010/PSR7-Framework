@@ -1,6 +1,10 @@
 <?php
 
-return array_merge_recursive(
-    require __DIR__ . '/dependencies.php',
-    require __DIR__ . '/parameters.php'
-);
+use Zend\ConfigAggregator\ConfigAggregator;
+use Zend\ConfigAggregator\PhpFileProvider;
+
+$aggregator = new ConfigAggregator([
+    new PhpFileProvider(__DIR__ . '/autoload/{{,*.}global,{,*.}local}.php'),
+]);
+
+return $aggregator->getMergedConfig();
