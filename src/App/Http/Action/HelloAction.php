@@ -2,18 +2,20 @@
 
 namespace App\Http\Action;
 
-use Psr\Http\Message\ServerRequestInterface;
+use Framework\Template\TemplateRenderer;
 use Zend\Diactoros\Response\HtmlResponse;
 
 class HelloAction
 {
-    public function __invoke(ServerRequestInterface $request)
+    private $template;
+
+    public function __construct(TemplateRenderer $template)
     {
+        $this->template = $template;
+    }
 
-        $name = $request->getQueryParams()['name'] ?? 'Guest';
-
-        $html =  require 'templates/hello.php';
-
-        return new HtmlResponse($html);
+    public function __invoke()
+    {
+        return new HtmlResponse($this->template->render('hello'));
     }
 }
