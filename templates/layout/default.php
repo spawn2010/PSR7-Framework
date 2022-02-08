@@ -8,8 +8,9 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title><?= $this->params['title'] ?? '' ?> - App</title>
+    <title><?= $this->renderBlock('title') ?> - App</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <?= $this->renderBlock('meta') ?>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
     <style>
         body { padding-top: 70px; }
@@ -29,14 +30,15 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="/">
+                <a class="navbar-brand" href="<?= $this->encode($this->path('home')) ?>">
                     Application
                 </a>
             </div>
             <div class="collapse navbar-collapse">
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="/about"><i class="glyphicon glyphicon-book"></i> About</a></li>
-                    <li><a href="/cabinet"><i class="glyphicon glyphicon-user"></i> Cabinet</a></li>
+                    <li><a href="<?= $this->encode($this->path('blog')) ?>"><i class="glyphicon glyphicon-book"></i> Blog</a></li>
+                    <li><a href="<?= $this->encode($this->path('about')) ?>"><i class="glyphicon glyphicon-book"></i> About</a></li>
+                    <li><a href="<?= $this->encode($this->path('cabinet')) ?>"><i class="glyphicon glyphicon-user"></i> Cabinet</a></li>
                 </ul>
             </div>
         </div>
@@ -46,7 +48,7 @@
 <div class="app-content">
     <main class="container">
         <?= $this->renderBlock('breadcrumbs') ?>
-        <?= $content ?>
+        <?= $this->renderBlock('content') ?>
     </main>
 </div>
 
