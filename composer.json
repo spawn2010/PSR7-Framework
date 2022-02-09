@@ -16,18 +16,28 @@
         "zendframework/zend-config-aggregator": "^1.0",
         "twig/twig": "^2.4",
         "filp/whoops": "^2.2",
+        "monolog/monolog": "^1.23",
       "ext-json": "*"
     }
 ,
     "require-dev": {
-        "phpunit/phpunit": "^6.4.1"
+        "phpunit/phpunit": "^6.4.1",
+        "psr/log": "^1.0"
     },
 
     "autoload": {
         "psr-4": {
             "Framework\\": "src/Framework/",
             "Tests\\": "tests",
-            "App\\": "src/App/"
+            "App\\": "src/App/",
+            "Infrastructure\\": "src/Infrastructure/"
         }
+    },
+
+    "scripts": {
+        "serve": "php -S 0.0.0.0:8080 -t public",
+        "test": "phpunit --colors=always",
+        "development-enable": "cp config/autoload/development.local.php.dist config/autoload/development.local.php",
+        "development-disable": "rm config/autoload/development.local.php"
     }
 }
