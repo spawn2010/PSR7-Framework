@@ -3,6 +3,7 @@
 use App\Http\Middleware;
 use App\Http\Middleware\ErrorHandler\PrettyErrorResponseGenerator;
 use Framework\Http\Application;
+use App\Http\Middleware\ErrorHandler\DebugErrorResponseGenerator;
 use App\Http\Middleware\ErrorHandler\ErrorHandlerMiddleware;
 use App\Http\Middleware\ErrorHandler\ErrorResponseGenerator;
 use Framework\Http\Pipeline\MiddlewareResolver;
@@ -36,9 +37,21 @@ return [
                 );
             },
             ErrorResponseGenerator::class => function (ContainerInterface $container) {
+                if ($container->get('config')['debug']) {
+                    return new DebugErrorResponseGenerator(
+                        $container->get(TemplateRenderer::class),
+                        new Zend\Diactoros\Response(),
+                        'error/error-debug'
+                    );
+                }
                 return new PrettyErrorResponseGenerator(
-                    $container->get('config')['debug'],
-                    $container->get(TemplateRenderer::class)
+                    $container->get(TemplateRenderer::class),
+                    new Zend\Diactoros\Response(),
+                    [
+                        '403' => 'error/403',
+                        '404' => 'error/404',
+                        'error' => 'error/error',
+                    ]
                 );
             },
         ],

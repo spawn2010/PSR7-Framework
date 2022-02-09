@@ -5,35 +5,43 @@ namespace App\Http\Middleware\ErrorHandler;
 use Framework\Template\TemplateRenderer;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Zend\Diactoros\Response\HtmlResponse;
+use Zend\Stratigility\Utils;
 
 class PrettyErrorResponseGenerator implements ErrorResponseGenerator
 {
-    private $debug;
     private $template;
+    private $response;
+    private $views;
 
-    public function __construct(bool $debug, TemplateRenderer $template)
+    public function __construct(TemplateRenderer $template, ResponseInterface $response, array $views)
     {
-        $this->debug = $debug;
         $this->template = $template;
+        $this->response = $response;
+        $this->views = $views;
     }
 
     public function generate(\Throwable $e, ServerRequestInterface $request): ResponseInterface
     {
-        $view = $this->debug ? 'error/error-debug' : 'error/error';
+        $code = Utils::getStatusCode($e, $this->response);
 
-        return new HtmlResponse($this->template->render($view, [
-            'request' => $request,
-            'exception' => $e,
-        ]), self::getStatusCode($e));
+        $response = $this->response->withStatus($code);
+        $response
+            ->getBody()
+            ->write($this->template->render($this->getView($code), [
+                'request' => $request,
+                'exception' => $e,
+            ]));
+
+        return $response;
     }
 
-    private static function getStatusCode(\Throwable $e) : int
+    private function getView($code): string
     {
-        $code = $e->getCode();
-        if ($code >= 400 && $code < 600) {
-            return $code;
+        if (array_key_exists($code, $this->views)) {
+            $view = $this->views[$code];
+        } else {
+            $view = $this->views['error'];
         }
-        return 500;
+        return $view;
     }
 }
